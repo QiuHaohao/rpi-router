@@ -1,3 +1,6 @@
 [submodule "tcp"]
 	path = tcp
 	url = https://github.com/QiuHaohao/tcp.git
+[submodule "arrow-finder"]
+	path = arrow-finder
+	url = https://github.com/QiuHaohao/arrow-finder.git
