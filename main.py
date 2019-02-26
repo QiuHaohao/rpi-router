@@ -1,23 +1,37 @@
 import queue
 import threading
 
+from tcp import TCPServer
+from BTServer import BTServer
+from SerialArduino import SerialArduino
 from ReceiveThread import ReceiveThread
 from SendThread import SendThread
-
-# using Stubs for now
-from Stubs import ReceiverStub, SenderStub
 
 queue_lock = threading.Lock()
 data_queue = queue.Queue()
 
-# initialising the connections 
-receivers = [ReceiverStub(id=i) for i in range(3)]
-senders = [SenderStub(id=i) for i in range(3)]
+bt = BTServer()
+ser = SerialArduino()
+pc = TCPServer()
+
+bt.init_connection()
+pc.init_connection()
+
+print("All Connections Up! Waiting for message...")
+
+# # using Stubs for now
+# from Stubs import ReceiverStub, SenderStub
+
+# # initialising the connections 
+# receivers = [ReceiverStub(id=i) for i in range(3)]
+# senders = [SenderStub(id=i) for i in range(3)]
+
+connections = [bt,ser,pc]
 
 receive_threads = [
 	ReceiveThread(threadID=i, 
 					name="Receive_Thread_{}".format(i), 
-					receiver=receivers[i], 
+					receiver=connections[i], 
 					lock=queue_lock, 
 					queue=data_queue
 				) 
@@ -29,7 +43,7 @@ for t in receive_threads:
 
 send_thread = SendThread(threadID=3, 
 							name="Send_Thread", 
-							scheme=senders, 
+							scheme=connections, 
 							lock=queue_lock, 
 							queue=data_queue
 						)
