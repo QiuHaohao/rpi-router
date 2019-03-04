@@ -57,7 +57,7 @@ class BTServer(object):
                 except BluetoothError:
                         print ("\nBluetooth Write Error. Connection was lost")
                         try :
-                            self.close_bt_socket()
+                            self.close_connection()
                             self.init_connection()       # Reestablish connection
                             print ("\nClosed and restarted Bluetooth connection successfully")
                         except Exception as e:
@@ -70,7 +70,7 @@ class BTServer(object):
                 except BluetoothError:
                         print ("\nBluetooth Read Error. Connection lost")
                         try :
-                            self.close_bt_socket()
+                            self.close_connection()
                             self.init_connection()       # Reestablish connection
                             print ("\nClosed and restarted Bluetooth connection successfully")
                         except Exception as e:
