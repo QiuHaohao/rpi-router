@@ -12,13 +12,15 @@ from threads.SendThread import SendThread
 queue_lock = threading.Lock()
 data_queue = queue.Queue()
 
-ser = SerialArduino()
-rpi = RpiConnection()
-bt = BTServer()
-pc = TCPServer()
+connections = [
+	SerialArduino(),
+	RpiConnection(),
+	BTServer(),
+	TCPServer()
+]
 
-bt.init_connection()
-pc.init_connection()
+for c in connections:
+	c.init_connection()
 
 print("All Connections Up! Waiting for message...")
 
@@ -29,7 +31,7 @@ print("All Connections Up! Waiting for message...")
 # receivers = [ReceiverStub(id=i) for i in range(3)]
 # senders = [SenderStub(id=i) for i in range(3)]
 
-connections = [ser,rpi,bt,pc]
+
 
 receive_threads = [
 	ReceiveThread(threadID=i, 

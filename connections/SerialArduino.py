@@ -1,6 +1,5 @@
 import serial
 
-
 class SerialArduino(object):
     def __init__(self,rate=9600):
         self.baudrate = rate
@@ -19,3 +18,6 @@ class SerialArduino(object):
             return self.readline() #this requires Arduino side to send '\n' as EOL
         except Exception as e:
             print("\nError Message : %s",str(e))
+
+    def init_connection(self):
+        pass
