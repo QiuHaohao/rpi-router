@@ -1,4 +1,4 @@
-from libs.arrow_finder import ArrowFinder
+from connections.libs.arrow_finder import ArrowFinder
 
 def to_byte(i, length=1, byteorder="little"):
 	return i.to_bytes(length,byteorder)
