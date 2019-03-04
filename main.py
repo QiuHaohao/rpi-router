@@ -1,13 +1,13 @@
 import queue
 import threading
 
-from tcp import TCPServer
-from BTServer import BTServer
-from SerialArduino import SerialArduino
-from RpiConnection import RpiConnection
+from connections.tcp import TCPServer
+from connections.BTServer import BTServer
+from connections.SerialArduino import SerialArduino
+from connections.RpiConnection import RpiConnection
 
-from ReceiveThread import ReceiveThread
-from SendThread import SendThread
+from threads.ReceiveThread import ReceiveThread
+from threads.SendThread import SendThread
 
 queue_lock = threading.Lock()
 data_queue = queue.Queue()

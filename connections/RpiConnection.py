@@ -1,4 +1,4 @@
-from arrow_finder import ArrowFinder
+from libs.arrow_finder import ArrowFinder
 
 def to_byte(i, length=1, byteorder="little"):
 	return i.to_bytes(length,byteorder)
@@ -11,7 +11,6 @@ class RpiConnection:
 		self.ready = False
 	def send(self, bytes):
 		self.ready = True
-
 	def recv(self):
 		while not self.ready:
 			pass
