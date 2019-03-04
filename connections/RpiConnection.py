@@ -20,4 +20,4 @@ class RpiConnection:
 		return DEST_HEADER_TO_PC + result
 
 	def init_connection(self):
-        pass
+		pass
