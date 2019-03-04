@@ -26,7 +26,7 @@ print("All Connections Up! Waiting for message...")
 # receivers = [ReceiverStub(id=i) for i in range(3)]
 # senders = [SenderStub(id=i) for i in range(3)]
 
-connections = [bt,ser,pc]
+connections = [ser,None,bt,pc]
 
 receive_threads = [
 	ReceiveThread(threadID=i, 
