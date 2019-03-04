@@ -26,7 +26,7 @@ class BTServer(object):
 
 
         def init_connection(self):
-                btport = 4
+                btport = 3
                 try:
                         self.server_socket = BluetoothSocket(RFCOMM)
                         self.server_socket.bind(("", btport))
