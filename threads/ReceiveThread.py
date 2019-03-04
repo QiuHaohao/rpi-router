@@ -15,6 +15,9 @@ class ReceiveThread (threading.Thread):
 		while True:
 			# the recv method is blocking
 			data = self.receiver.recv()
+			if not data:
+				print("{} received an empty message, skipping".format(receiver))
+				continue
 			self.lock.acquire()
 			self.queue.put(data)
 			self.lock.release()
