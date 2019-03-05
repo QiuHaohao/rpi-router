@@ -18,6 +18,8 @@ class ReceiveThread (threading.Thread):
 			if not data:
 				print("{} received an empty message, skipping".format(self.receiver))
 				continue
+			else:
+				print("Received data: {}".format(data))
 			self.lock.acquire()
 			self.queue.put(data)
 			self.lock.release()
