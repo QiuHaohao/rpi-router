@@ -7,6 +7,7 @@ def parse_msg(msg):
 	for i in range(8):
 		if dest_header & 1 << i != 0:
 			dest.append(i)
+	print("Sending to {}, dest header: {}".format(dest, dest_header))
 	return dest, payload
 
 class SendThread (threading.Thread):
