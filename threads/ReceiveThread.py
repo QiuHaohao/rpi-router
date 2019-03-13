@@ -1,7 +1,7 @@
 import threading
 
 class ReceiveThread (threading.Thread):
-	def __init__(self, threadID, name, receiver, lock, queue):
+	def __init__(self, threadID, name, receiver, lock, queue, log):
 		threading.Thread.__init__(self)
 		self.threadID = threadID
 		self.name = name
@@ -10,16 +10,17 @@ class ReceiveThread (threading.Thread):
 		self.receiver = receiver
 		self.lock = lock
 		self.queue = queue
+		self.log = log
 
 	def run(self):
 		while True:
 			# the recv method is blocking
 			data = self.receiver.recv()
 			if not data:
-				print("{} received an empty message, skipping".format(self.receiver))
+				self.log("{} received an empty message, skipping".format(self.receiver))
 				continue
 			else:
-				print("Received data: {} from {}".format(data, self.receiver))
+				self.log("Received data: {} from {}".format(data, self.receiver))
 			self.lock.acquire()
 			self.queue.put(data)
 			self.lock.release()

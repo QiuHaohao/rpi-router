@@ -7,11 +7,10 @@ def parse_msg(msg):
 	for i in range(8):
 		if dest_header & 1 << i != 0:
 			dest.append(i)
-	print("Sending to {}, dest header: {}".format(dest, dest_header))
 	return dest, payload
 
 class SendThread (threading.Thread):
-	def __init__(self, threadID, name, scheme, lock, queue):
+	def __init__(self, threadID, name, scheme, lock, queue, log):
 		threading.Thread.__init__(self)
 		self.threadID = threadID
 		self.name = name
@@ -21,6 +20,7 @@ class SendThread (threading.Thread):
 		self.scheme = scheme
 		self.lock = lock
 		self.queue = queue
+		self.log = log
 
 	def run(self):
 		while True:
@@ -32,5 +32,7 @@ class SendThread (threading.Thread):
 
 	def send(self, data):
 		dest, payload = parse_msg(data)
+		self.log("Sending to {}, Data: {}".format(dest, payload))
+
 		for d in dest:
 			self.scheme[d].send(payload)
