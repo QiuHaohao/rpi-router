@@ -8,13 +8,14 @@ class SerialArduino(object):
 
     def send(self, msg):
         try :
+            self.wait_until_ser_avail()
             self.ser.write(msg) #msg is in bytes form
         except Exception as e :
             print("\nError Message : %s",str(e))
 
     def recv(self):
         try:
-            #return ser.read(1)
+            self.wait_until_ser_avail()
             return self.ser.readline() #this requires Arduino side to send '\n' as EOL
         except Exception as e:
             print("\nError Message : %s",str(e))
@@ -25,3 +26,7 @@ class SerialArduino(object):
             print("Serial connected.")
         except Exception as e:
             print("Serial not connected: {}".format(e))
+
+    def wait_until_ser_avail(self):
+        while not self.ser.available():
+                pass
