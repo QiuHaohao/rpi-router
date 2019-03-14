@@ -23,7 +23,7 @@ class DetectionThread(threading.Thread):
 
 	def run(self):
 		while True:
-			if not self.got_msg():
+			if self.got_msg():
 				msg = self.get_first_msg()
 				msg_payload = msg[1:]
 				got_arrow = self.detect()
@@ -34,7 +34,7 @@ class DetectionThread(threading.Thread):
 		return bool(
 			self.arrowFinder.getArrows(
 				after_capture = self.on_finish_capturing
-			)
+			)['arrows']
 		)
 
 class RpiConnection:
@@ -42,37 +42,47 @@ class RpiConnection:
 		self.ready = False
 		self.in_queue = queue.Queue()
 		self.out_queue = queue.Queue()
+		self.in_lock = threading.Lock()
+		self.out_lock = threading.Lock()
 		self.detech_thread = DetectionThread(
 			got_msg=lambda: not self.in_queue.empty(),
-			get_first_msg=self.in_queue.get,
+			get_first_msg=self.get_from_in_queue,
 			on_finish_capturing=self.put_capturing_finished,
 			on_detected=self.put_arrow_detected
 		)
 		self.detech_thread.start()
 
 	def send(self, msg):
-		self.in_queue.put(msg)
+		with self.in_lock:
+			self.in_queue.put(msg)
 
 	def recv(self):
 		# block when there is nothing to be received
 		while self.out_queue.empty():
 			pass
-		return self.out_queue.get()
+		with self.out_lock:
+			return self.out_queue.get()
+	
+	def get_from_in_queue(self):
+		with self.in_lock:
+			return self.in_queue.get()
 
 	def put_capturing_finished(self):
-		self.out_queue.put(
-			DEST_HEADER_TO_PC
-			+ SENDER_ADDR_FROM_RPI
-			+ CODE_CAPTURING_FINISHED
-		)
+		with self.out_lock:
+			self.out_queue.put(
+				DEST_HEADER_TO_PC
+				+ SENDER_ADDR_FROM_RPI
+				+ CODE_CAPTURING_FINISHED
+			)
 
 	def put_arrow_detected(self, msg_payload):
-		self.out_queue.put(
-			DEST_HEADER_TO_PC
-			+ SENDER_ADDR_FROM_RPI
-			+ CODE_ARROW_DETECTED
-			+ msg_payload
-		)
+		with self.out_lock:
+			self.out_queue.put(
+				DEST_HEADER_TO_PC
+				+ SENDER_ADDR_FROM_RPI
+				+ CODE_ARROW_DETECTED
+				+ msg_payload
+			)
 
 	def init_connection(self):
 		# initialise detect_loop
