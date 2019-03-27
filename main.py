@@ -25,9 +25,9 @@ data_queue = queue.Queue()
 
 connections = [
 	SerialArduino(),
-	RpiConnection(),
+	TCPServer(),
 	BTServer(),
-	TCPServer()
+	RpiConnection()
 ]
 
 for c in connections:
