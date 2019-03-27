@@ -1,21 +1,38 @@
 import queue
 import threading
+import time
+import random
 
 from connections.libs.arrow_finder import ArrowFinder
 
 def to_byte(i, length=1, byteorder="little"):
 	return i.to_bytes(length,byteorder)
 
-DEST_HEADER_TO_PC = to_byte(8)
-SENDER_ADDR_FROM_RPI = to_byte(2)
+DEST_HEADER_TO_PC = to_byte(2)
+SENDER_ADDR_FROM_RPI = to_byte(8)
 
 CODE_CAPTURING_FINISHED = to_byte(21)
 CODE_ARROW_DETECTED = to_byte(22)
 
+class ArrowFinderStub:
+	def __init__(self, capture_delay=0.3, arrow_probability=0.5):
+		self.capture_delay = capture_delay
+		self.arrow_probability = arrow_probability
+	def _detected(self):
+		return random.random() < self.arrow_probability
+	def _getResult(self):
+		return {"arrows": [123] if self._detected() else []}
+	def getArrows(self, after_capture=lambda: None):
+		time.sleep(self.capture_delay)
+		after_capture()
+		result = self._getResult()
+		return result
+
 class DetectionThread(threading.Thread):
-	def __init__(self, got_msg, get_first_msg, on_finish_capturing, on_detected):
+	def __init__(self, got_msg, get_first_msg, on_finish_capturing, on_detected, debug=False):
 		threading.Thread.__init__(self)
-		self.arrowFinder = ArrowFinder()
+		self.debug=debug
+		self.arrowFinder = ArrowFinderStub() if debug else ArrowFinder()
 		self.got_msg = got_msg
 		self.get_first_msg = get_first_msg
 		self.on_finish_capturing = on_finish_capturing
@@ -38,8 +55,9 @@ class DetectionThread(threading.Thread):
 		)
 
 class RpiConnection:
-	def __init__(self):
+	def __init__(self, debug=False):
 		self.ready = False
+		self.debug=debug
 		self.in_queue = queue.Queue()
 		self.out_queue = queue.Queue()
 		self.in_lock = threading.Lock()
@@ -48,7 +66,8 @@ class RpiConnection:
 			got_msg=lambda: not self.in_queue.empty(),
 			get_first_msg=self.get_from_in_queue,
 			on_finish_capturing=self.put_capturing_finished,
-			on_detected=self.put_arrow_detected
+			on_detected=self.put_arrow_detected,
+			debug=self.debug
 		)
 		self.detech_thread.start()
 
