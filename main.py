@@ -23,15 +23,15 @@ l = logging.getLogger(__name__)
 queue_lock = threading.Lock()
 data_queue = queue.Queue()
 
-connections = [
-	SerialArduino(),
-	BTServer(),
-	TCPServer(),
-	RpiConnection()
-]
+connections = {
+	0: SerialArduino(),
+	1: BTServer(),
+	2: TCPServer(),
+	3: RpiConnection()
+}
 
 for c in connections:
-	c.init_connection()
+	connections[c].init_connection()
 
 starting_time = time.time()
 
@@ -45,7 +45,7 @@ receive_threads = [
 					queue=data_queue,
 					log=log_with_time
 				) 
-	for i in range(len(connections))
+	for i in connections
 ]
 
 for t in receive_threads:
