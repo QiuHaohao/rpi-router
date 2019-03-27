@@ -8,7 +8,7 @@ from connections.libs.arrow_finder import ArrowFinder
 def to_byte(i, length=1, byteorder="little"):
 	return i.to_bytes(length,byteorder)
 
-DEST_HEADER_TO_PC = to_byte(2)
+DEST_HEADER_TO_PC = to_byte(4)
 SENDER_ADDR_FROM_RPI = to_byte(8)
 
 CODE_CAPTURING_FINISHED = to_byte(21)
@@ -42,7 +42,7 @@ class DetectionThread(threading.Thread):
 		while True:
 			if self.got_msg():
 				msg = self.get_first_msg()
-				msg_payload = msg[1:]
+				msg_payload = msg[2:]
 				got_arrow = self.detect()
 				if got_arrow:
 					self.on_detected(msg_payload)
