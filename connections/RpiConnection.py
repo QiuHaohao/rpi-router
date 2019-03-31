@@ -14,25 +14,26 @@ SENDER_ADDR_FROM_RPI = to_byte(8)
 CODE_CAPTURING_FINISHED = to_byte(21)
 CODE_ARROW_DETECTED = to_byte(22)
 
-class ArrowFinderStub:
-	def __init__(self, capture_delay=0.3, arrow_probability=0.5):
-		self.capture_delay = capture_delay
-		self.arrow_probability = arrow_probability
-	def _detected(self):
-		return random.random() < self.arrow_probability
-	def _getResult(self):
-		return {"arrows": [123] if self._detected() else []}
-	def getArrows(self, after_capture=lambda: None):
-		time.sleep(self.capture_delay)
-		after_capture()
-		result = self._getResult()
-		return result
+# class ArrowFinderStub:
+# 	def __init__(self, capture_delay=0.3, arrow_probability=0.5):
+# 		self.capture_delay = capture_delay
+# 		self.arrow_probability = arrow_probability
+# 	def _detected(self):
+# 		return random.random() < self.arrow_probability
+# 	def _getResult(self):
+# 		return {"arrows": [123] if self._detected() else []}
+# 	def getArrows(self, after_capture=lambda: None):
+# 		time.sleep(self.capture_delay)
+# 		after_capture()
+# 		result = self._getResult()
+# 		return result
 
 class DetectionThread(threading.Thread):
 	def __init__(self, got_msg, get_first_msg, on_finish_capturing, on_detected, debug=False):
 		threading.Thread.__init__(self)
 		self.debug=debug
-		self.arrowFinder = ArrowFinderStub() if debug else ArrowFinder()
+		# self.arrowFinder = ArrowFinderStub() if debug else ArrowFinder()
+		self.arrowFinder = ArrowFinder()
 		self.got_msg = got_msg
 		self.get_first_msg = get_first_msg
 		self.on_finish_capturing = on_finish_capturing
