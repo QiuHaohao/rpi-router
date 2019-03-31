@@ -10,7 +10,7 @@ def parse_msg(msg):
 	return dest, payload
 
 class SendThread (threading.Thread):
-	def __init__(self, threadID, name, scheme, lock, queue, log):
+	def __init__(self, threadID, name, scheme, queue, log):
 		threading.Thread.__init__(self)
 		self.threadID = threadID
 		self.name = name
@@ -18,17 +18,13 @@ class SendThread (threading.Thread):
 		# All connections should be initialised already 
 		# before being passed in
 		self.scheme = scheme
-		self.lock = lock
 		self.queue = queue
 		self.log = log
 
 	def run(self):
 		while True:
-			self.lock.acquire()
-			if not self.queue.empty():
-				data = self.queue.get()
-				self.send(data)
-			self.lock.release()
+			data = self.queue.get()
+			self.send(data)
 
 	def send(self, data):
 		dest, payload = parse_msg(data)

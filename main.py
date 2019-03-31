@@ -20,7 +20,6 @@ def log_with_time(msg, lvl=logging.WARNING):
 
 l = logging.getLogger(__name__)
 
-queue_lock = threading.Lock()
 data_queue = queue.Queue()
 
 connections = {
@@ -41,7 +40,6 @@ receive_threads = [
 	ReceiveThread(threadID=i, 
 					name="Receive_Thread_{}".format(i), 
 					receiver=connections[i], 
-					lock=queue_lock, 
 					queue=data_queue,
 					log=log_with_time
 				) 
@@ -54,7 +52,6 @@ for t in receive_threads:
 send_thread = SendThread(threadID=len(connections), 
 							name="Send_Thread", 
 							scheme=connections, 
-							lock=queue_lock, 
 							queue=data_queue,
 							log=log_with_time
 						)
