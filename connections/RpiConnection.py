@@ -29,25 +29,23 @@ CODE_ARROW_DETECTED = to_byte(22)
 # 		return result
 
 class DetectionThread(threading.Thread):
-	def __init__(self, got_msg, get_first_msg, on_finish_capturing, on_detected, debug=False):
+	def __init__(self, get_msg, on_finish_capturing, on_detected, debug=False):
 		threading.Thread.__init__(self)
 		self.debug=debug
 		# self.arrowFinder = ArrowFinderStub() if debug else ArrowFinder()
 		self.arrowFinder = ArrowFinder()
-		self.got_msg = got_msg
-		self.get_first_msg = get_first_msg
+		self.get_msg = get_msg
 		self.on_finish_capturing = on_finish_capturing
 		self.on_detected = on_detected
 
 	def run(self):
 		while True:
-			if self.got_msg():
-				msg = self.get_first_msg()
-				arrowsPos = self.detect()
-				if len(arrowsPos):
-					pos_payload = b''.join(list(map(to_byte, arrowsPos)))
-					msg_payload = msg[2:] + pos_payload
-					self.on_detected(msg_payload)
+			msg = self.get_msg()
+			arrowsPos = self.detect()
+			if len(arrowsPos):
+				pos_payload = b''.join(list(map(to_byte, arrowsPos)))
+				msg_payload = msg[2:] + pos_payload
+				self.on_detected(msg_payload)
 
 	def detect(self):
 		arrows = self.arrowFinder.getArrows(
@@ -68,8 +66,7 @@ class RpiConnection:
 		self.in_queue = queue.Queue()
 		self.out_queue = queue.Queue()
 		self.detech_thread = DetectionThread(
-			got_msg=lambda: not self.in_queue.empty(),
-			get_first_msg=self.get_from_in_queue,
+			get_msg=self.get_from_in_queue,
 			on_finish_capturing=self.put_capturing_finished,
 			on_detected=self.put_arrow_detected,
 			debug=self.debug
