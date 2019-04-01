@@ -51,7 +51,8 @@ class DetectionThread(threading.Thread):
 	def detect(self):
 		return bool(
 			self.arrowFinder.getArrows(
-				after_capture = self.on_finish_capturing
+				after_capture = self.on_finish_capturing,
+				with_image=True
 			)['arrows']
 		)
 
