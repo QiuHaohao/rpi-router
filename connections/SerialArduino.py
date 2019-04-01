@@ -3,7 +3,7 @@ import serial
 class SerialArduino(object):
     def __init__(self,rate=115200):
         self.baud_rate = rate
-        self.port = '/dev/ttyACM1' #can be either 0 or 1 depending on which port connected to Arduino
+        self.port = '/dev/ttyACM0' #can be either 0 or 1 depending on which port connected to Arduino
         self.ser = None
 
     def send(self, msg):
