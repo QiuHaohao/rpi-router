@@ -6,7 +6,7 @@ import random
 from connections.libs.arrow_finder import ArrowFinder
 
 def to_byte(i, length=1, byteorder="little"):
-	return i.to_bytes(length,byteorder)
+	return int(i).to_bytes(length,byteorder)
 
 DEST_HEADER_TO_PC = to_byte(4)
 SENDER_ADDR_FROM_RPI = to_byte(8)
@@ -44,7 +44,7 @@ class DetectionThread(threading.Thread):
 			if self.got_msg():
 				msg = self.get_first_msg()
 				arrowsPos = self.detect()
-				if len(arrows):
+				if len(arrowsPos):
 					pos_payload = b''.join(list(map(to_byte, arrowsPos)))
 					msg_payload = msg[2:] + pos_payload
 					self.on_detected(msg_payload)
