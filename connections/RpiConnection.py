@@ -43,18 +43,23 @@ class DetectionThread(threading.Thread):
 		while True:
 			if self.got_msg():
 				msg = self.get_first_msg()
-				msg_payload = msg[2:]
-				got_arrow = self.detect()
-				if got_arrow:
+				arrowsPos = self.detect()
+				if len(arrows):
+					pos_payload = b''.join(list(map(to_byte, arrowsPos)))
+					msg_payload = msg[2:] + pos_payload
 					self.on_detected(msg_payload)
 
 	def detect(self):
-		return bool(
-			self.arrowFinder.getArrows(
-				after_capture = self.on_finish_capturing,
-				with_image=True
-			)['arrows']
+		arrows = self.arrowFinder.getArrows(
+			after_capture = self.on_finish_capturing,
+			with_image=True
+		)['arrows']
+		arrowPos = list(
+			map(lambda a: a['pos'],
+				arrows
+				)
 		)
+		return arrowPos
 
 class RpiConnection:
 	def __init__(self, debug=False):
