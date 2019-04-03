@@ -15,6 +15,7 @@ FORMAT = 'Time: %(time_from_start)dms - %(message)s'
 logging.basicConfig(format=FORMAT)
 
 def log_with_time(msg, lvl=logging.WARNING):
+	return
 	time_from_start = time.time() - starting_time
 	l.log(lvl, msg, extra={'time_from_start': time_from_start*1000})
 
